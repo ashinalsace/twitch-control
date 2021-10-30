@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 import pyautogui
 import sched, time, operator
 # Global------------------------------------------------------
-actions = ["up","down"]
-actionsCount = {"up":0, "down":0,}
+actions = ["up","down", "left", "right", "click", "echo"]
+actionsCount = {"up":0, "down":0, "left":0, "right":0, "click":0, "echo":0,}
 scheculeAction = sched.scheduler(time.time, time.sleep)
 #Functions----------------------------------------------------
 def parseMessage(text):
@@ -29,7 +29,7 @@ def executeAction(action):
        pyautogui.move(10, 0)
     if (action == "click"):
        pyautogui.click()
-    if (action == "echo!"):
+    if (action == "echo"):
         pyautogui.write(action, interval=0.25)
         pyautogui.keyDown('enter')
 #-------------------------------------------------------------
@@ -42,8 +42,9 @@ def do_Action(sc):
     if (actionsCount[actionSelected] > 0):
         executeAction(actionSelected)
     # Reschedule timer
-    actionsCount[actionSelected] = 0
-    scheculeAction.enter(5, 1, do_Action, (sc,))
+    for act in actionsCount:
+            actionsCount[act] = 0
+    scheculeAction.enter(3, 1, do_Action, (sc,))
 # Main--------------------------------------------------------
 
 load_dotenv()  # take environment variables from .env
