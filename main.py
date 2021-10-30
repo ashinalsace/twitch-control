@@ -1,4 +1,5 @@
 
+from logging import NullHandler
 import PySimpleGUI as sg
 from PySimpleGUI.PySimpleGUI import Tree
 from bot import doAction, doConnect
@@ -6,8 +7,8 @@ import os
 from dotenv import load_dotenv
 import time, threading
 
-
-
+layout = [[sg.Text("Twitch Chat bot Machine Control")]]
+window = None
 runActions = False
 
 def runCheck():
@@ -18,16 +19,24 @@ def runCheck():
     threading.Timer(2, runCheck).start()
 
 def doButConnect():
-    doConnect(TWITCH_CHANNEL,TWITCH_NICKNAME,TWITCH_OAUTHTOKEN)
+    if (doConnect(TWITCH_CHANNEL,TWITCH_NICKNAME,TWITCH_OAUTHTOKEN)):
+        global window
+        window["Connect"].update(disabled=True)
 def doButStart():
     global runActions
+    window["Start"].update(disabled=True)
+    window["Stop"].update(disabled=False)
     runActions = True
 def doButStop():
     global runActions
+    window["Start"].update(disabled=False)
+    window["Stop"].update(disabled=True)
     runActions = False
 def doButExit():
     window.close()
 
+
+buttons = {"Connect": doButConnect, "Start":doButStart, "Stop":doButStop, "Exit":doButExit}
 
 # Load environment
 load_dotenv()  # take environment variables from .env
@@ -35,9 +44,6 @@ TWITCH_CHANNEL = os.getenv('TWITCH_CHANNEL')
 TWITCH_NICKNAME = os.getenv('TWITCH_NICKNAME')
 TWITCH_OAUTHTOKEN = os.getenv('TWITCH_OAUTHTOKEN')
 
-buttons = {"Connect": doButConnect, "Start":doButStart, "Stop":doButStop, "Exit":doButExit}
-
-layout = [[sg.Text("Twitch Chat bot Machine Control")]]
 
 for but in buttons:
     layout.append([sg.Button(but)])   

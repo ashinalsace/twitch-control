@@ -8,6 +8,7 @@ import pyautogui
 actions = ["up","down", "left", "right", "click", "echo"]
 actionsCount = {"up":0, "down":0, "left":0, "right":0, "click":0, "echo":0,}
 scheculeAction = sched.scheduler(time.time, time.sleep)
+bConnected = False
 
 #Functions----------------------------------------------------
 def parseMessage(text):
@@ -50,10 +51,11 @@ def doAction():
 def doConnect(TWITCH_CHANNEL,TWITCH_NICKNAME,TWITCH_OAUTHTOKEN):
     # Connect to chat feed
     print ("Connecting to channel",  TWITCH_CHANNEL)
-    twitch.Chat(channel=TWITCH_CHANNEL, nickname=TWITCH_NICKNAME, oauth=TWITCH_OAUTHTOKEN).subscribe(
+    bConnected = twitch.Chat(channel=TWITCH_CHANNEL, nickname=TWITCH_NICKNAME, oauth=TWITCH_OAUTHTOKEN).subscribe(
         lambda message: 
             parseMessage(message.text)
     )
+    return bConnected
 
 
 
