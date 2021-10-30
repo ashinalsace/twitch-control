@@ -9,7 +9,7 @@ actions = ["up","down", "left", "right", "click", "echo"]
 actionsCount = {"up":0, "down":0, "left":0, "right":0, "click":0, "echo":0,}
 scheculeAction = sched.scheduler(time.time, time.sleep)
 bConnected = False
-
+mouseMove = { "up":(0,-10), "down":(0, 10), "left":(-10, 0), "right":(10,0)}
 #Functions----------------------------------------------------
 def parseMessage(text):
     print(text)
@@ -21,14 +21,8 @@ def parseMessage(text):
 #-------------------------------------------------------------
 def executeAction(action):
     print("Exceuting", action)
-    if (action == "up"):
-        pyautogui.move(0, -10)
-    if (action == "down"):
-       pyautogui.move(0, 10)
-    if (action == "left"):
-       pyautogui.move(-10, 0)
-    if (action == "right"):
-       pyautogui.move(10, 0)
+    if (action in mouseMove):
+        pyautogui.move(mouseMove[action])
     if (action == "click"):
        pyautogui.click()
     if (action == "echo"):
