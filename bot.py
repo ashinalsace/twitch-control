@@ -34,7 +34,6 @@ def executeAction(action):
         pyautogui.write(action, interval=0.25)
         pyautogui.keyDown('enter')
 
-
 #-------------------------------------------------------------
 def doAction(): 
     print("Choose action")
@@ -46,7 +45,7 @@ def doAction():
         executeAction(actionSelected)
     # Reschedule timer
     for act in actionsCount:
-            actionsCount[act] = 0
+        actionsCount[act] = 0
 
 def doConnect(TWITCH_CHANNEL,TWITCH_NICKNAME,TWITCH_OAUTHTOKEN):
     # Connect to chat feed

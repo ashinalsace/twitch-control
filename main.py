@@ -1,21 +1,33 @@
 
 import PySimpleGUI as sg
+from PySimpleGUI.PySimpleGUI import Tree
 from bot import doAction, doConnect
 import os
 from dotenv import load_dotenv
 import time, threading
 
 
-run = False
+
+runActions = False
 
 def runCheck():
-    print(time.ctime())
-    if(run):
-        print("Running")
+    global runActions
+    print(time.ctime(), runActions)
+    if (runActions):
         doAction()
-    else:
-         print("Not running")
     threading.Timer(2, runCheck).start()
+
+def doButConnect():
+    doConnect(TWITCH_CHANNEL,TWITCH_NICKNAME,TWITCH_OAUTHTOKEN)
+def doButStart():
+    global runActions
+    runActions = True
+def doButStop():
+    global runActions
+    runActions = False
+def doButExit():
+    window.close()
+
 
 # Load environment
 load_dotenv()  # take environment variables from .env
@@ -23,30 +35,24 @@ TWITCH_CHANNEL = os.getenv('TWITCH_CHANNEL')
 TWITCH_NICKNAME = os.getenv('TWITCH_NICKNAME')
 TWITCH_OAUTHTOKEN = os.getenv('TWITCH_OAUTHTOKEN')
 
-layout = [[sg.Text("Twitch Chat bot Machine Control")],
-    [sg.Button("Connect")],
-    [sg.Button("Start")], 
-    [sg.Button("Stop")],
-    [sg.Button("OK")]]
+buttons = {"Connect": doButConnect, "Start":doButStart, "Stop":doButStop, "Exit":doButExit}
+
+layout = [[sg.Text("Twitch Chat bot Machine Control")]]
+
+for but in buttons:
+    layout.append([sg.Button(but)])   
 
 # Create the window
 window = sg.Window("Control", layout)
+# Start actions timer
 threading.Timer(2, runCheck).start()
 
 # Create an event loop
 while True:
     event, values = window.read()
-    # End program if user closes window or
-    # presses the OK button
-    if event == "OK" or event == sg.WIN_CLOSED:
+    if event in buttons:
+        buttons[event]()
+    # End program if user closes window
+    if event == sg.WIN_CLOSED:
         break
-    if event =="Connect":
-        doConnect(TWITCH_CHANNEL,TWITCH_NICKNAME,TWITCH_OAUTHTOKEN)
-    if event =="Start":
-        run = True
-        print("Started")
-    if event =="Stop":
-        run = False
-        print("Stopped")
 
-window.close()
