@@ -2,7 +2,10 @@
 from logging import NullHandler
 import PySimpleGUI as sg
 from PySimpleGUI.PySimpleGUI import Tree
-from bot import doAction, doConnect
+import twitchbot.bot as tw
+import actions.actions as ac
+import control.actions as cm
+
 import os
 from dotenv import load_dotenv
 import time, threading
@@ -15,11 +18,13 @@ def runCheck():
     global runActions
     print(time.ctime(), runActions)
     if (runActions):
-        doAction()
+        act = ac.choose_action()
+        if (act != None):
+            cm.executeAction(act)
     threading.Timer(2, runCheck).start()
 
 def doButConnect():
-    if (doConnect(TWITCH_CHANNEL,TWITCH_NICKNAME,TWITCH_OAUTHTOKEN)):
+    if (tw.doConnect(TWITCH_CHANNEL,TWITCH_NICKNAME,TWITCH_OAUTHTOKEN)):
         global window
         window["Connect"].update(disabled=True)
 def doButStart():
