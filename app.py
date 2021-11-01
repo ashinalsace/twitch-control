@@ -55,8 +55,7 @@ def main():
                 nickname=settings["nickname"], 
                 oauth=settings["token"]).subscribe(
         lambda message:
-            record_command(message.text)
-    )
+            record_command(message.text))
 
     while True:
         time.sleep(settings["actionPeriod"])
