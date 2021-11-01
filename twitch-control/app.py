@@ -1,69 +1,67 @@
+import os, json, time
+from os import path
+import operator
+import pyautogui
+import twitch
 
-from logging import NullHandler
-import PySimpleGUI as sg
-from PySimpleGUI.PySimpleGUI import Tree
-import twitchbot.bot as tw
-import actions.actions as ac
-import control.actions as cm
+# Global
+actionMappings = {}
+commandCounts = {}
 
-import os
-from dotenv import load_dotenv
-import time, threading
+#Functions----------------------------------------------------
+def record_command(command):
+    print("Received ",command)
+    if command in commandCounts:
+        #logger.info(f"Found command {command}")
+        commandCounts[command] = commandCounts[command] + 1
+        print("Added command ", command)
+#-------------------------------------------------------------
+def choose_action(): 
+    chosenAction = None
+    print("Choosing action from ", commandCounts)
+    # Get ordered list
+    sorted_commands = sorted(commandCounts.items(), key=operator.itemgetter(1),reverse=True)
+    firstCommand = sorted_commands[0][0]
+    if (commandCounts[firstCommand] > 0):
+        chosenAction = actionMappings[firstCommand]
+        print("Chosen ", chosenAction)
+    else:
+        print("No action chosen")
+    # Reset data
+    for cmd in commandCounts:
+        commandCounts[cmd] = 0
+    return chosenAction
+#------------------------------------------------------------
+def load_commands(commands):
+    for command in commands:
+        actionMappings[command] = commands[command]
+        commandCounts[command] = 0
+    print("Loaed commands ", actionMappings)
+#------------------------------------------------------------
+def runActionSelection():
+    print("Checking for actions: ", time.ctime())
+    action = choose_action()
+    if (action != None):
+        pyautogui.write(action, interval=0.25)
+#------------------------------------------------------------
+def main():
+    SETTINGS_FILE = path.join(path.dirname(__file__), r'settings.json')
+    with open(SETTINGS_FILE) as json_settings_file:
+        settings = json.load(json_settings_file)
 
-layout = [[sg.Text("Twitch Chat bot Machine Control")]]
-window = None
-runActions = False
+    load_commands(settings["commandactions"])
 
-def runCheck():
-    global runActions
-    print(time.ctime(), runActions)
-    if (runActions):
-        act = ac.choose_action()
-        if (act != None):
-            cm.executeAction(act)
-    threading.Timer(2, runCheck).start()
+    twitch.Chat(channel=settings["channel"], 
+                nickname=settings["nickname"], 
+                oauth=settings["token"]).subscribe(
+        lambda message:
+            record_command(message.text)
+    )
 
-def doButConnect():
-    if (tw.doConnect(TWITCH_CHANNEL,TWITCH_NICKNAME,TWITCH_OAUTHTOKEN)):
-        global window
-        window["Connect"].update(disabled=True)
-def doButStart():
-    global runActions
-    window["Start"].update(disabled=True)
-    window["Stop"].update(disabled=False)
-    runActions = True
-def doButStop():
-    global runActions
-    window["Start"].update(disabled=False)
-    window["Stop"].update(disabled=True)
-    runActions = False
-def doButExit():
-    window.close()
+    while True:
+        time.sleep(settings["actionPeriod"])
+        print("Running")
+        runActionSelection()
 
-
-buttons = {"Connect": doButConnect, "Start":doButStart, "Stop":doButStop, "Exit":doButExit}
-
-# Load environment
-load_dotenv()  # take environment variables from .env
-TWITCH_CHANNEL = os.getenv('TWITCH_CHANNEL')
-TWITCH_NICKNAME = os.getenv('TWITCH_NICKNAME')
-TWITCH_OAUTHTOKEN = os.getenv('TWITCH_OAUTHTOKEN')
-
-
-for but in buttons:
-    layout.append([sg.Button(but)])   
-
-# Create the window
-window = sg.Window("Control", layout)
-# Start actions timer
-threading.Timer(2, runCheck).start()
-
-# Create an event loop
-while True:
-    event, values = window.read()
-    if event in buttons:
-        buttons[event]()
-    # End program if user closes window
-    if event == sg.WIN_CLOSED:
-        break
-
+if __name__ == '__main__':
+    main()

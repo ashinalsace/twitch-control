@@ -1,0 +1,10 @@
+{
+    "commandactions" : {
+        "load":"y",
+        "down":"x"
+    },
+    "actionPeriod" : 3,
+    "channel":"#ashinalsace", 
+    "nickname": "ashinalsace",
+    "token":"oauth:4gnfw9ustjnoir3k0pnfk9ddse2r3m"
+}
