@@ -12,7 +12,6 @@ commandCounts = {}
 def record_command(command):
     print("Received ",command)
     if command in commandCounts:
-        #logger.info(f"Found command {command}")
         commandCounts[command] = commandCounts[command] + 1
         print("Added command ", command)
 #-------------------------------------------------------------
@@ -27,7 +26,7 @@ def choose_action():
         print("Chosen ", chosenAction)
     else:
         print("No action chosen")
-    # Reset data
+    # Reset counts
     for cmd in commandCounts:
         commandCounts[cmd] = 0
     return chosenAction
