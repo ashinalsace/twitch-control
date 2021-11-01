@@ -36,7 +36,7 @@ def load_commands(commands):
     for command in commands:
         actionMappings[command] = commands[command]
         commandCounts[command] = 0
-    print("Loaed commands ", actionMappings)
+    print("Loaded commands ", actionMappings)
 #------------------------------------------------------------
 def runActionSelection():
     print("Checking for actions: ", time.ctime())
