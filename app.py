@@ -56,10 +56,13 @@ def main():
         lambda message:
             record_command(message.text))
 
-    while True:
-        time.sleep(settings["actionPeriod"])
-        print("Running")
-        runActionSelection()
+    try:
+        while True:
+            time.sleep(settings["actionPeriod"])
+            print("Running. Hit Ctrl-C to quit")
+            runActionSelection()
+    except:
+        pass            
 
 if __name__ == '__main__':
     main()
