@@ -1,6 +1,6 @@
 # Twitch chat bot for keyboard control
 
-This is a working application that allows messages send in a twitch chat feed to translate in to key presses on the machine running the script
+This is a working application that allows messages sent in a twitch chat feed to translate in to key presses on the machine running the script
 
 Simple implementation thanks to the packages twitch-python https://pypi.org/project/twitch-python/ and PyAutoGUI https://pypi.org/project/PyAutoGUI/
 
